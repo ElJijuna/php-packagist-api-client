@@ -31,7 +31,7 @@ describe('PackagistClient', () => {
   });
 
   it('requests package fields with repeated fields[] query params', async () => {
-    mockResponse({ package: { 'composer/composer': { type: 'library' } } });
+    mockResponse({ packages: { 'composer/composer': { type: 'library' } } });
     await packagist.listPackages({ fields: ['type', 'repository'] });
     const url = mockFetch.mock.calls[0][0] as string;
     expect(url).toContain('fields%5B%5D=type');

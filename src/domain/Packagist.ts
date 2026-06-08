@@ -8,6 +8,8 @@ export interface PackageListOptions {
 
 export interface PackageListResponse {
   packageNames?: PackageName[];
+  packages?: Record<PackageName, PackageListEntry>;
+  /** @deprecated Packagist docs show this key, but live API returns `packages`. */
   package?: Record<PackageName, PackageListEntry>;
 }
 
