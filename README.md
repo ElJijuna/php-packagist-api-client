@@ -1,5 +1,19 @@
 # php-packagist-api-client
 
+<p align="center">
+  <img src="https://packagist.org/img/logo-small.png" alt="Packagist logo" width="160" />
+</p>
+
+[![CI](https://github.com/ElJijuna/php-packagist-api-client/actions/workflows/ci.yml/badge.svg)](https://github.com/ElJijuna/php-packagist-api-client/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/php-packagist-api-client)](https://www.npmjs.com/package/php-packagist-api-client)
+[![npm downloads/week](https://img.shields.io/npm/dw/php-packagist-api-client)](https://www.npmjs.com/package/php-packagist-api-client)
+[![npm downloads/month](https://img.shields.io/npm/dm/php-packagist-api-client)](https://www.npmjs.com/package/php-packagist-api-client)
+[![Bundle size](https://img.shields.io/bundlephobia/minzip/php-packagist-api-client)](https://bundlephobia.com/package/php-packagist-api-client)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
+[![TypeScript](https://img.shields.io/badge/TypeScript-6.x-blue?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
+[![Node.js](https://img.shields.io/node/v/php-packagist-api-client)](https://nodejs.org/)
+[![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://semver.org)
+
 TypeScript client for the Packagist REST API.
 
 ## Install
