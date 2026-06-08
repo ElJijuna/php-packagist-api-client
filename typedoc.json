@@ -1,6 +1,14 @@
 {
+  "$schema": "https://typedoc.org/schema.json",
+  "extends": "./node_modules/super-configs/typedoc.json",
   "entryPoints": ["src/index.ts"],
   "out": "docs",
-  "name": "php-packagist-api-client",
-  "includeVersion": true
+  "name": "Packagist API Client",
+  "readme": "README.md",
+  "exclude": ["**/*.test.ts", "**/*.spec.ts", "**/test/**"],
+  "navigationLinks": {
+    "GitHub": "https://github.com/ElJijuna/php-packagist-api-client",
+    "npm": "https://www.npmjs.com/package/php-packagist-api-client",
+    "Packagist API": "https://packagist.org/apidoc"
+  }
 }

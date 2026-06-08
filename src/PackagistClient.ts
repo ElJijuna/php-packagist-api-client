@@ -22,29 +22,56 @@ const DEFAULT_API_URL = 'https://packagist.org';
 const DEFAULT_REPO_URL = 'https://repo.packagist.org';
 
 export interface RequestEvent {
+  /** Full URL requested, including query string. */
   url: string;
+  /** HTTP method used for the request. */
   method: 'GET' | 'POST' | 'PUT';
+  /** Timestamp captured immediately before `fetch` runs. */
   startedAt: Date;
+  /** Timestamp captured after success or failure. */
   finishedAt: Date;
+  /** Request duration in milliseconds. */
   durationMs: number;
+  /** HTTP status code, if Packagist returned a response. */
   statusCode?: number;
+  /** Error thrown by fetch or by Packagist non-2xx handling. */
   error?: Error;
 }
 
+/** Event callbacks supported by {@link PackagistClient}. */
 export interface PackagistClientEvents {
+  /** Emitted once per HTTP request, including failed requests. */
   request: (event: RequestEvent) => void;
 }
 
+/** Constructor options for {@link PackagistClient}. */
 export interface PackagistClientOptions {
+  /** Base URL for Packagist JSON API. Defaults to `https://packagist.org`. */
   apiUrl?: string;
+  /** Base URL for Composer v2 metadata. Defaults to `https://repo.packagist.org`. */
   repoUrl?: string;
+  /** Packagist username for authenticated endpoints. */
   username?: string;
+  /** Packagist API token paired with `username`. */
   apiToken?: string;
+  /** User-Agent sent with all requests. Packagist recommends including contact email. */
   userAgent?: string;
 }
 
 /**
- * Main entry point for Packagist API.
+ * Main entry point for the Packagist API.
+ *
+ * @example
+ * ```typescript
+ * import { PackagistClient } from 'php-packagist-api-client';
+ *
+ * const packagist = new PackagistClient({
+ *   userAgent: 'my-app (mailto:me@example.com)',
+ * });
+ *
+ * const pkg = await packagist.package('monolog/monolog');
+ * const search = await packagist.search({ query: 'logger', perPage: 5 });
+ * ```
  */
 export class PackagistClient {
   private readonly apiUrl: string;
@@ -65,6 +92,13 @@ export class PackagistClient {
     this.userAgent = options.userAgent;
   }
 
+  /**
+   * Subscribes to client request events.
+   *
+   * @param event - Event name to subscribe to.
+   * @param callback - Function invoked after each request succeeds or fails.
+   * @returns The current client for chaining.
+   */
   on<K extends keyof PackagistClientEvents>(event: K, callback: PackagistClientEvents[K]): this {
     const callbacks = this.listeners.get(event) ?? [];
     callbacks.push(callback);
@@ -72,6 +106,15 @@ export class PackagistClient {
     return this;
   }
 
+  /**
+   * Creates an awaitable resource for one Packagist package.
+   *
+   * The returned resource can be awaited directly, or used to access package
+   * metadata, stats, and advisories.
+   *
+   * @param name - Composer package name in `vendor/package` form.
+   * @returns Chainable package resource.
+   */
   package(name: PackageName): PackageResource {
     return new PackageResource(
       <T>(
@@ -84,6 +127,17 @@ export class PackagistClient {
     );
   }
 
+  /**
+   * Lists package names from Packagist.
+   *
+   * Wraps `GET /packages/list.json`. Supports filtering by vendor or package
+   * type, and can request extra fields such as repository URL, package type,
+   * and abandoned status.
+   *
+   * @param options - Optional vendor/type filters and extra fields.
+   * @param signal - Optional abort signal.
+   * @returns Package names, or package metadata when fields are requested.
+   */
   async listPackages(
     options: PackageListOptions = {},
     signal?: AbortSignal,
@@ -102,6 +156,15 @@ export class PackagistClient {
     );
   }
 
+  /**
+   * Lists popular packages ranked by recent downloads.
+   *
+   * Wraps `GET /explore/popular.json`.
+   *
+   * @param options - Pagination options.
+   * @param signal - Optional abort signal.
+   * @returns Popular package summaries and pagination metadata.
+   */
   async popular(
     options: PopularPackagesOptions = {},
     signal?: AbortSignal,
@@ -116,6 +179,16 @@ export class PackagistClient {
     );
   }
 
+  /**
+   * Searches packages by query, tag, type, or combined filters.
+   *
+   * Wraps `GET /search.json`. At least one of `query`, `tags`, or `type`
+   * must be provided.
+   *
+   * @param options - Search filters and pagination options.
+   * @param signal - Optional abort signal.
+   * @returns Search results from Packagist.
+   */
   async search(
     options: SearchPackagesOptions,
     signal?: AbortSignal,
@@ -144,6 +217,16 @@ export class PackagistClient {
     );
   }
 
+  /**
+   * Polls Packagist metadata changes.
+   *
+   * Wraps `GET /metadata/changes.json`. Pass a stored timestamp in `since` to
+   * fetch package updates/deletes since that point.
+   *
+   * @param options - Timestamp filter.
+   * @param signal - Optional abort signal.
+   * @returns Metadata change actions or initialization timestamp/error payload.
+   */
   async metadataChanges(
     options: MetadataChangesOptions = {},
     signal?: AbortSignal,
@@ -158,6 +241,14 @@ export class PackagistClient {
     );
   }
 
+  /**
+   * Gets global Packagist statistics.
+   *
+   * Wraps `GET /statistics.json`.
+   *
+   * @param signal - Optional abort signal.
+   * @returns Total download statistics.
+   */
   async statistics(signal?: AbortSignal): Promise<StatisticsResponse> {
     return this.request<StatisticsResponse>(
       'GET',
@@ -169,6 +260,15 @@ export class PackagistClient {
     );
   }
 
+  /**
+   * Lists security advisories for packages or updates since a timestamp.
+   *
+   * Wraps `GET /api/security-advisories/`.
+   *
+   * @param options - Package names/PURLs or `updatedSince` timestamp.
+   * @param signal - Optional abort signal.
+   * @returns Advisories keyed by package name.
+   */
   async securityAdvisories(
     options: SecurityAdvisoriesOptions,
     signal?: AbortSignal,
@@ -190,6 +290,15 @@ export class PackagistClient {
     );
   }
 
+  /**
+   * Creates a Packagist package from a repository URL.
+   *
+   * Requires authentication with the MAIN token.
+   *
+   * @param repository - Source repository URL.
+   * @param signal - Optional abort signal.
+   * @returns Mutation status.
+   */
   async createPackage(repository: string, signal?: AbortSignal): Promise<PackageMutationResponse> {
     return this.request<PackageMutationResponse>(
       'POST',
@@ -201,6 +310,16 @@ export class PackagistClient {
     );
   }
 
+  /**
+   * Edits the repository URL for an existing package.
+   *
+   * Requires authentication with the MAIN token.
+   *
+   * @param name - Package name in `vendor/package` form.
+   * @param repository - New source repository URL.
+   * @param signal - Optional abort signal.
+   * @returns Mutation status.
+   */
   async editPackage(
     name: PackageName,
     repository: string,
@@ -216,6 +335,15 @@ export class PackagistClient {
     );
   }
 
+  /**
+   * Triggers Packagist update for a repository or package URL.
+   *
+   * Requires authentication with a SAFE or MAIN token.
+   *
+   * @param repository - Repository URL or Packagist package URL.
+   * @param signal - Optional abort signal.
+   * @returns Update status and queued job IDs when provided by Packagist.
+   */
   async updatePackage(repository: string, signal?: AbortSignal): Promise<PackageUpdateResponse> {
     return this.request<PackageUpdateResponse>(
       'POST',
