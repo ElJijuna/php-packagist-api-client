@@ -1,0 +1,40 @@
+export { PackagistClient } from './PackagistClient';
+export { PackagistApiError } from './errors/PackagistApiError';
+export { PackageResource } from './resources/PackageResource';
+export type {
+  PackagistClientEvents,
+  PackagistClientOptions,
+  RequestEvent,
+} from './PackagistClient';
+export type {
+  DownloadStats,
+  Maintainer,
+  MetadataChange,
+  MetadataChangesOptions,
+  MetadataChangesResponse,
+  MetadataOptions,
+  PackageAuthor,
+  PackageData,
+  PackageDist,
+  PackageListEntry,
+  PackageListOptions,
+  PackageListResponse,
+  PackageMetadataResponse,
+  PackageMutationResponse,
+  PackageName,
+  PackageResponse,
+  PackageSource,
+  PackageStatsResponse,
+  PackageSummary,
+  PackageUpdateResponse,
+  PackageVersion,
+  PopularPackagesOptions,
+  PopularPackagesResponse,
+  SearchPackagesOptions,
+  SearchPackagesResponse,
+  SecurityAdvisoriesOptions,
+  SecurityAdvisoriesResponse,
+  SecurityAdvisory,
+  SecurityAdvisorySource,
+  StatisticsResponse,
+} from './domain/Packagist';

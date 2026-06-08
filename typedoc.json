@@ -1,0 +1,6 @@
+{
+  "entryPoints": ["src/index.ts"],
+  "out": "docs",
+  "name": "php-packagist-api-client",
+  "includeVersion": true
+}
