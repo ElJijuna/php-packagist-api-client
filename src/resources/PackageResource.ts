@@ -25,7 +25,9 @@ export class PackageResource implements PromiseLike<PackageResponse> {
       const value = await this.get();
       return onfulfilled ? onfulfilled(value) : (value as TResult1);
     } catch (error) {
-      if (onrejected) return onrejected(error);
+      if (onrejected) {
+        return onrejected(error);
+      }
       throw error;
     }
   }

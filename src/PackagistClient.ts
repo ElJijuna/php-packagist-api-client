@@ -288,8 +288,12 @@ export class PackagistClient {
 
   private headers(hasJsonBody: boolean): Record<string, string> {
     const headers: Record<string, string> = { Accept: 'application/json' };
-    if (this.userAgent) headers['User-Agent'] = this.userAgent;
-    if (hasJsonBody) headers['Content-Type'] = 'application/json';
+    if (this.userAgent) {
+      headers['User-Agent'] = this.userAgent;
+    }
+    if (hasJsonBody) {
+      headers['Content-Type'] = 'application/json';
+    }
     if (this.username && this.apiToken) {
       headers.Authorization = `Bearer ${this.username}:${this.apiToken}`;
     }
@@ -300,7 +304,9 @@ export class PackagistClient {
 function buildUrl(url: string, params?: Record<string, QueryValue | undefined>): string {
   const parsed = new URL(url);
   for (const [key, value] of Object.entries(params ?? {})) {
-    if (value === undefined) continue;
+    if (value === undefined) {
+      continue;
+    }
     const values = Array.isArray(value) ? value : [value];
     for (const item of values) {
       parsed.searchParams.append(key, String(item));
