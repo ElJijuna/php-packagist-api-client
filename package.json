@@ -1,6 +1,6 @@
 {
   "name": "php-packagist-api-client",
-  "version": "0.0.0",
+  "version": "1.0.0",
   "type": "module",
   "description": "TypeScript client for the Packagist REST API",
   "main": "dist/index.cjs",
